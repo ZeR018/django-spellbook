@@ -13,50 +13,50 @@ class Spellbook(models.Model):
     у одного игрока - несколько персонажей)
     """
 
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-    spells = models.ManyToManyField(Spell, related_name="spellbooks", blank=True)
+    id = models.AutoField(primary_key=True, verbose_name="id")
+    name = models.CharField(max_length=100, verbose_name="Название")
+    description = models.TextField(blank=True, verbose_name="Описание")
+    spells = models.ManyToManyField(Spell, related_name="spellbooks", blank=True, verbose_name="Заклинания")
     owner = models.ForeignKey(
-        Person, on_delete=models.CASCADE, related_name="spellbooks"
+        Person, on_delete=models.CASCADE, related_name="spellbooks", verbose_name="Персонаж"
     )
 
     # Статус
-    is_active = models.BooleanField(default=True, help_text="Активен ли этот спеллбук")
+    is_active = models.BooleanField(default=True, help_text="Активен ли этот спеллбук", verbose_name="Активен")
     is_shared = models.BooleanField(
-        default=False, help_text="Доступен ли для других игроков"
+        default=False, help_text="Доступен ли для других игроков", verbose_name="Публичный"
     )
 
     # Ячейки заклинаний в этом спеллбуке
-    max_spell_slots_1 = models.IntegerField(default=0)
-    max_spell_slots_2 = models.IntegerField(default=0)
-    max_spell_slots_3 = models.IntegerField(default=0)
-    max_spell_slots_4 = models.IntegerField(default=0)
-    max_spell_slots_5 = models.IntegerField(default=0)
-    max_spell_slots_6 = models.IntegerField(default=0)
-    max_spell_slots_7 = models.IntegerField(default=0)
-    max_spell_slots_8 = models.IntegerField(default=0)
-    max_spell_slots_9 = models.IntegerField(default=0)
+    max_spell_slots_1 = models.IntegerField(default=0, verbose_name="Максимальное кол-во ячеек 1го уровня")
+    max_spell_slots_2 = models.IntegerField(default=0, verbose_name="Максимальное кол-во ячеек 2го уровня")
+    max_spell_slots_3 = models.IntegerField(default=0, verbose_name="Максимальное кол-во ячеек 3го уровня")
+    max_spell_slots_4 = models.IntegerField(default=0, verbose_name="Максимальное кол-во ячеек 4го уровня")
+    max_spell_slots_5 = models.IntegerField(default=0, verbose_name="Максимальное кол-во ячеек 5го уровня")
+    max_spell_slots_6 = models.IntegerField(default=0, verbose_name="Максимальное кол-во ячеек 6го уровня")
+    max_spell_slots_7 = models.IntegerField(default=0, verbose_name="Максимальное кол-во ячеек 7го уровня")
+    max_spell_slots_8 = models.IntegerField(default=0, verbose_name="Максимальное кол-во ячеек 8го уровня")
+    max_spell_slots_9 = models.IntegerField(default=0, verbose_name="Максимальное кол-во ячеек 9го уровня")
 
-    current_spell_slots_1 = models.IntegerField(default=0)
-    current_spell_slots_2 = models.IntegerField(default=0)
-    current_spell_slots_3 = models.IntegerField(default=0)
-    current_spell_slots_4 = models.IntegerField(default=0)
-    current_spell_slots_5 = models.IntegerField(default=0)
-    current_spell_slots_6 = models.IntegerField(default=0)
-    current_spell_slots_7 = models.IntegerField(default=0)
-    current_spell_slots_8 = models.IntegerField(default=0)
-    current_spell_slots_9 = models.IntegerField(default=0)
+    current_spell_slots_1 = models.IntegerField(default=0, verbose_name="Текущее кол-во ячеек 1го уровня")
+    current_spell_slots_2 = models.IntegerField(default=0, verbose_name="Текущее кол-во ячеек 2го уровня")
+    current_spell_slots_3 = models.IntegerField(default=0, verbose_name="Текущее кол-во ячеек 3го уровня")
+    current_spell_slots_4 = models.IntegerField(default=0, verbose_name="Текущее кол-во ячеек 4го уровня")
+    current_spell_slots_5 = models.IntegerField(default=0, verbose_name="Текущее кол-во ячеек 5го уровня")
+    current_spell_slots_6 = models.IntegerField(default=0, verbose_name="Текущее кол-во ячеек 6го уровня")
+    current_spell_slots_7 = models.IntegerField(default=0, verbose_name="Текущее кол-во ячеек 7го уровня")
+    current_spell_slots_8 = models.IntegerField(default=0, verbose_name="Текущее кол-во ячеек 8го уровня")
+    current_spell_slots_9 = models.IntegerField(default=0, verbose_name="Текущее кол-во ячеек 9го уровня")
 
     # Колдовские ячейки
-    warlock_slot_level = models.IntegerField(default=0)
-    warlock_max_slots = models.IntegerField(default=0)
-    warlock_current_slots = models.IntegerField(default=0)
+    warlock_slot_level = models.IntegerField(default=0, verbose_name="Уровень ячейки колдуна")
+    warlock_max_slots = models.IntegerField(default=0, verbose_name="Максимальное кол-во ячеек колдуна")
+    warlock_current_slots = models.IntegerField(default=0, verbose_name="Текущее кол-во ячеек колдуна")
 
     # Метаданные
-    created_at = models.DateTimeField(default=now)
-    updated_at = models.DateTimeField(auto_now=True)
-    last_used = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(default=now, verbose_name="Создано")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Обновлено")
+    last_used = models.DateTimeField(null=True, blank=True, verbose_name="Последний заход")
 
     def __str__(self):
         return f"{self.name} ({self.owner.name})"
