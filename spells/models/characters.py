@@ -9,20 +9,21 @@ from spells.models.users import Player
 class CharacterClass(models.Model):
     """Класс персонажа"""
 
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50, unique=True)
-    description = models.TextField()
+    id = models.AutoField(primary_key=True, verbose_name="id")
+    name = models.CharField(max_length=50, unique=True, verbose_name="Название")
+    description = models.TextField(verbose_name="Описание")
     magic_type = models.CharField(
-        max_length=2, choices=MagicType.choices, default=MagicType.NON_CASTER
+        max_length=2, choices=MagicType.choices, default=MagicType.NON_CASTER, verbose_name="Магический тип"
     )
     hit_die = models.CharField(
-        max_length=10, choices=Dice.choices, default=Dice.d8, help_text="Кость хитов"
+        max_length=10, choices=Dice.choices, default=Dice.d8, help_text="Кость хитов", verbose_name="Кости хитов"
     )
     spellcasting_ability = models.CharField(
         max_length=3,
         choices=Characters.choices,
         default=Characters.WISDOM,
         help_text="Заклинательная характеристика",
+        verbose_name="Заклинательная характеристика"
     )
 
     def __str__(self):
@@ -36,17 +37,18 @@ class CharacterClass(models.Model):
 class Subclass(models.Model):
     """Подкласс/архетип персонажа"""
 
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
-    description = models.TextField()
+    id = models.AutoField(primary_key=True, verbose_name="id")
+    name = models.CharField(max_length=100, verbose_name="Название")
+    description = models.TextField(verbose_name="Описание")
     character_class = models.ForeignKey(
-        CharacterClass, on_delete=models.CASCADE, related_name="subclasses"
+        CharacterClass, on_delete=models.CASCADE, related_name="subclasses", verbose_name="Класс"
     )
-    features_description = models.TextField(blank=True)
+    features_description = models.TextField(blank=True, verbose_name="Описание характеристик")
     level_gained = models.IntegerField(
         default=3,
         validators=[MinValueValidator(1), MaxValueValidator(20)],
         help_text="На каком уровне класса получается этот подкласс",
+        verbose_name="Уровень получения"
     )
 
     def __str__(self):
@@ -61,10 +63,10 @@ class Subclass(models.Model):
 class Person(models.Model):
     """Персонаж игрока"""
 
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
+    id = models.AutoField(primary_key=True, verbose_name="id")
+    name = models.CharField(max_length=100, verbose_name="Название")
     player = models.ForeignKey(
-        Player, on_delete=models.SET_NULL, null=True, related_name="characters"
+        Player, on_delete=models.SET_NULL, null=True, related_name="characters", verbose_name="Игрок"
     )
 
     # Основные характеристики
@@ -74,6 +76,7 @@ class Person(models.Model):
         null=True,
         blank=True,
         related_name="characters",
+        verbose_name="Класс"
     )
     subclass = models.ForeignKey(
         Subclass,
@@ -81,63 +84,66 @@ class Person(models.Model):
         null=True,
         blank=True,
         related_name="characters",
+        verbose_name="Подкласс"
     )
     primary_class_level = models.IntegerField(
-        default=1, validators=[MinValueValidator(1), MaxValueValidator(20)]
+        default=1, validators=[MinValueValidator(1), MaxValueValidator(20)], verbose_name="Уровень основного класса"
     )
 
     # Раса
-    race = models.CharField(max_length=100, blank=True)
-    subrace = models.CharField(max_length=100, blank=True)
-    alignment = models.CharField(max_length=2, choices=Alignment.choices, blank=True)
-    background = models.CharField(max_length=100, blank=True)
+    race = models.CharField(max_length=100, blank=True, verbose_name="Раса")
+    subrace = models.CharField(max_length=100, blank=True, verbose_name="Подраса")
+    alignment = models.CharField(max_length=2, choices=Alignment.choices, blank=True, verbose_name="Мировоззрение")
+    background = models.CharField(max_length=100, blank=True, verbose_name="Предыстория")
 
     # Характеристики (ability scores)
     strength = models.IntegerField(
-        default=10, validators=[MinValueValidator(1), MaxValueValidator(30)]
+        default=10, validators=[MinValueValidator(1), MaxValueValidator(30)], verbose_name="Сила"
     )
     dexterity = models.IntegerField(
-        default=10, validators=[MinValueValidator(1), MaxValueValidator(30)]
+        default=10, validators=[MinValueValidator(1), MaxValueValidator(30)], verbose_name="Ловкость"
     )
     constitution = models.IntegerField(
-        default=10, validators=[MinValueValidator(1), MaxValueValidator(30)]
+        default=10, validators=[MinValueValidator(1), MaxValueValidator(30)], verbose_name="Телосложение"
     )
     intelligence = models.IntegerField(
-        default=10, validators=[MinValueValidator(1), MaxValueValidator(30)]
+        default=10, validators=[MinValueValidator(1), MaxValueValidator(30)], verbose_name="Интеллект"
     )
     wisdom = models.IntegerField(
-        default=10, validators=[MinValueValidator(1), MaxValueValidator(30)]
+        default=10, validators=[MinValueValidator(1), MaxValueValidator(30)], verbose_name="Мудрость"
     )
     charisma = models.IntegerField(
-        default=10, validators=[MinValueValidator(1), MaxValueValidator(30)]
+        default=10, validators=[MinValueValidator(1), MaxValueValidator(30)], verbose_name="Харизма"
     )
 
-    max_hit_points = models.IntegerField(default=10)
-    current_hit_points = models.IntegerField(default=10)
-    temporary_hit_points = models.IntegerField(default=0)
+    max_hit_points = models.IntegerField(default=10, verbose_name="Макисмальное кол-во хитов")
+    current_hit_points = models.IntegerField(default=10, verbose_name="Текущее кол-во хитов")
+    temporary_hit_points = models.IntegerField(default=0, verbose_name="Временное кол-во хитов")
 
-    armor_class = models.IntegerField(default=10)
-    initiative_bonus = models.IntegerField(default=0)
-    speed = models.IntegerField(default=30, help_text="Скорость в футах")
+    armor_class = models.IntegerField(default=10, verbose_name="Класс доспеха (КД)")
+    initiative_bonus = models.IntegerField(default=0, verbose_name="Модификатор инициативы")
+    speed = models.IntegerField(default=30, help_text="Скорость в футах", verbose_name="Скорость")
     proficiency_bonus = models.IntegerField(
-        default=2, validators=[MinValueValidator(2), MaxValueValidator(6)]
+        default=2, validators=[MinValueValidator(2), MaxValueValidator(6)], verbose_name="Бонус мастерства"
     )
 
     spellcasting_ability = models.CharField(
         max_length=3,
         choices=Characters.choices,
         blank=True,
-        help_text="Заклинательная характеристика",
+        help_text="Заклинательная характеристика", 
+        verbose_name="Характеристика"
     )
 
     # Мультикласс
-    is_multiclass = models.BooleanField(default=False)
+    is_multiclass = models.BooleanField(default=False, verbose_name="Мультикласс")
     second_class = models.ForeignKey(
         CharacterClass,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="secondary_characters",
+        verbose_name="Дополнительный класс"
     )
     second_subclass = models.ForeignKey(
         Subclass,
@@ -145,9 +151,10 @@ class Person(models.Model):
         null=True,
         blank=True,
         related_name="secondary_characters",
+        verbose_name="Дополнительный подкласс"
     )
     second_class_level = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(19)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(19)], verbose_name="Второй уровень класса"
     )
 
     # Колдун
@@ -155,15 +162,16 @@ class Person(models.Model):
         default=0,
         validators=[MinValueValidator(0), MaxValueValidator(20)],
         help_text="Уровень колдуна (если мультикласс)",
+        verbose_name="Уровень колдуна"
     )
 
     # Метаданные
-    is_active = models.BooleanField(default=True)
-    is_favorite = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True, verbose_name="Активный")
+    is_favorite = models.BooleanField(default=False, verbose_name="Любимый")
     is_public = models.BooleanField(
-        default=False, help_text="Могут ли другие игроки видеть"
+        default=False, help_text="Могут ли другие игроки видеть", verbose_name="Публичный"
     )
-    created_at = models.DateTimeField(default=now)
+    created_at = models.DateTimeField(default=now, verbose_name="Создано")
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
