@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers, status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -49,3 +50,51 @@ class MaterialConponentListView(APIView):
         serializer.save()
         # Отправление ответ с кодом 201 (created) и созданный объект
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+
+class MaterialComponentDetailView(APIView):
+    def get(self, request: Request, id: int):
+        """Получение компонента по id"""
+        # Находит объект по id или выходит из запроса с кодом 404 (not found)
+        component = get_object_or_404(MaterialComponent, id=id)
+        # Настраиваем сериализатор
+        serializer = MaterialComponentSerializer(component)
+        # Возвращение данных и статуса 200
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request: Request, id: int):
+        """Полное обновление компонента"""
+        # Находит объект по id или выходит из запроса с кодом 404 (not found)
+        component = get_object_or_404(MaterialComponent, id=id)
+        # Сериализатор сам заменяет данные в существующем объекте
+        serializer = MaterialComponentSerializer(component, data=request.data)
+        # Проверка валидности данных
+        serializer.is_valid(raise_exception=True)
+        # Сохранение измененного объекта
+        serializer.save()
+        # Возвращение измененного ответа и статуса 200
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request: Request, id: int):
+        """Частичное обновление компонента"""
+        # Находит объект по id или выходит из запроса с кодом 404 (not found)
+        component = get_object_or_404(MaterialComponent, id=id)
+        # Настройка сериализатора с параметром partial
+        serializer = MaterialComponentSerializer(
+            component, data=request.data, partial=True
+        )
+        # Проверка валидности данных
+        serializer.is_valid(raise_exception=True)
+        # Сохранение обновленного компонента
+        serializer.save()
+        # Возвращение измененного ответа и статуса 200
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request: Request, id: int):
+        """Удаление компонента"""
+        # Находит объект по id или выходит из запроса с кодом 404 (not found)
+        component = get_object_or_404(MaterialComponent, id=id)
+        # Удаление объекта из базы
+        component.delete()
+        # Возвращение успешного статуса 204 (no content)
+        return Response(status=status.HTTP_204_NO_CONTENT)
